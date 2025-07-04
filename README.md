@@ -12,7 +12,7 @@ Project Organization
     │          
     ├── data               <- Nos sources de données
     │
-    ├── models         		<- Sauvegarde joblib/pickle de nos modèles entrainés (problème de régression + classification)
+    ├── models         	   <- Sauvegarde joblib/pickle de nos modèles entrainés (problème de régression + classification)
     │   ├── saved_models_classification
     │   └── saved_models_regression 
     │
