@@ -1,7 +1,0 @@
-Modèle,Meilleurs params,Accuracy,F1-weighted
-Decision Tree (standard),default,96.77%,96.74%
-Decision Tree (GridSearch),"{'clf__criterion': 'gini', 'clf__max_depth': None, 'clf__min_samples_split': 2}",96.77%,96.74%
-Random Forest (standard),default,96.68%,96.64%
-Random Forest (GridSearch),"{'clf__max_depth': None, 'clf__min_samples_leaf': 1, 'clf__n_estimators': 100}",96.68%,96.64%
-Gradient Boosting (GridSearch),"{'clf__learning_rate': 0.1, 'clf__max_depth': 5, 'clf__n_estimators': 200}",96.36%,96.32%
-Gradient Boosting (standard),default,93.04%,92.86%
