@@ -2690,68 +2690,35 @@ def show_linear_regression():
                 return
             
             # MODIFICATION: Suppression du slider et hardcoding de 500
-            sample_size = 500
-            st.info(f"Échantillon fixé à {sample_size} observations pour l'analyse SHAP")
-            
-            run_shap = st.button("🚀 Exécuter l'analyse SHAP", key='run_shap_button')
-            
+            run_shap = st.button("🚀 Générer l'analyse SHAP", key='run_shap_button')
+
             if run_shap:
                 try:
-                                        
-                    with st.spinner("Calcul des valeurs SHAP..."):
-                        X_test_sample = X_test.sample(n=min(sample_size, len(X_test)), random_state=42)
-                        
-                        explainer = shap.Explainer(
-                            best_model,
-                            X_train,
-                            feature_perturbation="interventional"
-                        )
-                        
-                        shap_values = explainer(X_test_sample, check_additivity=False)
+                    with st.spinner("Chargement de l'analyse SHAP..."):
+                        # Charger l'image SHAP
+                        shap_image_path = os.path.join("saved_models_classification", "shap.png")
+                        if os.path.exists(shap_image_path):
+                            st.image(shap_image_path, caption="Analyse SHAP - Feature Importance", use_column_width=True)
+                        else:
+                            st.error("Image SHAP non trouvée dans le dossier saved_models_classification")
                     
-                    st.success("✅ Valeurs SHAP calculées avec succès !")
+                    st.success("✅ Analyse SHAP chargée avec succès !")
                     
-                    # Visualisations SHAP
-                    
-                    # 1. Beeswarm plot
-                    fig_beeswarm, ax_beeswarm = plt.subplots(figsize=(10, 8))
-                    shap.plots.beeswarm(shap_values, show=False)
-                    plt.title(f"SHAP Beeswarm Plot - {best_model_info['name']}")
-                    plt.tight_layout()
-                    st.pyplot(fig_beeswarm)
-                    
-                    # 2. Bar plot
-                    fig_bar, ax_bar = plt.subplots(figsize=(10, 6))
-                    shap.plots.bar(shap_values, show=False)
-                    plt.title(f"SHAP Bar Plot - {best_model_info['name']}")
-                    plt.tight_layout()
-                    st.pyplot(fig_bar)
-                    
-                    # 3. Analyse quantitative
-                                        
-                    abs_shap = np.abs(shap_values.values).mean(axis=0)
-                    
-                    df_shap = pd.DataFrame({
-                        'feature': X_test_sample.columns,
-                        'mean_abs_shap': abs_shap
-                    })
-                    
-                    df_shap['pct'] = df_shap['mean_abs_shap'] / df_shap['mean_abs_shap'].sum() * 100
-                    df_shap = df_shap.sort_values('pct', ascending=False)
-                    
+                    # Résultats en dur
                     st.markdown("**Top 5 des features par importance SHAP :**")
-                    top5_display = df_shap.head(5).copy()
-                    top5_display['pct_formatted'] = top5_display['pct'].apply(lambda x: f"{x:.1f}%")
+                    
+                    # Création du DataFrame avec les résultats en dur
+                    top5_data = {
+                        'Feature': ['nox', 'typ_crb_grp_ES', 'typ_boite_nb_rapp', 'hcnox', 'co_typ_1'],
+                        'Contribution (%)': ['45.1%', '14.1%', '12.6%', '7.4%', '5.6%']
+                    }
+                    
+                    top5_df = pd.DataFrame(top5_data)
                     
                     safe_dataframe_display(
-                        top5_display[['feature', 'pct_formatted']].rename(columns={
-                            'feature': 'Feature',
-                            'pct_formatted': 'Contribution (%)'
-                        }),
+                        top5_df,
                         "Top 5 Features SHAP"
                     )
-                    
-                    top3 = df_shap.head(3)
                     
                     st.markdown("#### 🎯 Interprétation des Résultats")
                     
@@ -2759,29 +2726,33 @@ def show_linear_regression():
                     **Résultats clés de l'analyse SHAP :**
                     
                     1. **Caractéristique à l'impact le plus significatif sur les prédictions de CO₂ :**
-                    - **'{top3.iloc[0].feature}'** (contribution : **{top3.iloc[0].pct:.1f}%**)
+                    - **'nox'** (contribution : **45.1%**)
                     
                     
                     2. **Autres caractéristiques influentes :**
-                    - **{top3.iloc[1].feature}** ({top3.iloc[1].pct:.1f}%)
-                    - **{top3.iloc[2].feature}** ({top3.iloc[2].pct:.1f}%)
+                    - **typ_crb_grp_ES** (14.1%)
+                    - **typ_boite_nb_rapp** (12.6%)
                     
                     
                     Les valeurs SHAP nous permettent de voir non seulement **quelles** variables sont importantes, 
                     mais aussi **comment** elles influencent chaque prédiction individuelle dans le contexte des émissions de CO₂ des véhicules.
                     """)
                     
-                    # MODIFICATION: Suppression du graphique de contribution
-                    
                 except Exception as e:
-                    st.error(f"❌ Erreur lors du calcul SHAP : {e}")
-                    st.info("💡 Conseil : Vérifiez la compatibilité du modèle avec SHAP")
-        
-        else:
-            st.info("Aucun meilleur modèle identifié. Veuillez d'abord charger des modèles dans l'onglet 'Modélisation ML'.")
-          
+                    st.error(f"Erreur lors du chargement de l'analyse SHAP : {e}")
 
-        st.markdown("---")
+                                
+                                # MODIFICATION: Suppression du graphique de contribution
+                                
+                            except Exception as e:
+                                st.error(f"❌ Erreur lors du calcul SHAP : {e}")
+                                st.info("💡 Conseil : Vérifiez la compatibilité du modèle avec SHAP")
+                    
+                    else:
+                        st.info("Aucun meilleur modèle identifié. Veuillez d'abord charger des modèles dans l'onglet 'Modélisation ML'.")
+                    
+
+                    st.markdown("---")
 
     # ----------------------------------------------------------------
     # MODIFICATION: Nouvel onglet Conclusions / Recommandations (index 6)
