@@ -450,7 +450,7 @@ def afficher_accueil():
         st.info("""
         **🎯 Objectifs du projet :**
         - Analyser les données pour les émissions CO2
-        - Construire deux modèles prédictifs (un linéaire & un logistique)
+        - Construire deux modèles prédictifs (régression + classification)
         - Identifier les facteurs clés influençant les émissions de CO2
         - Classer les véhicules par classe d'efficacité CO2 (référence ACRISS)
         - Émettre des conclusions et recommandations
